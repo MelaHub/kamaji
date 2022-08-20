@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "kamaji"
+version = "0.1.0"
+description = ""
+authors = ["Pamela Gotti <pamela.gotti@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+boto3 = "^1.24.56"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
