@@ -4,6 +4,7 @@ import pandas as pd
 import csv
 import json
 import seaborn as sn
+import calendar
 
 
 def __generate_pd(activities):
@@ -15,7 +16,7 @@ def __generate_pd(activities):
             data[int(activity_day) - 1][int(activity_month) - 1] += len(
                 activities_year[activity_year]["L"]
             )
-    return pd.DataFrame(data, index=[i for i in range(1, 32)], columns=['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
+    return pd.DataFrame(data, index=[i for i in range(1, 32)], columns=[calendar.month_name[i][0:3] for i in range(1, 13)])
 
 
 def __retrieve_activities(activities_file_path):
