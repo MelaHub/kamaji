@@ -5,9 +5,18 @@ import csv
 import json
 import seaborn as sn
 import calendar
+from typing import TypedDict
 
+class Activity(TypedDict):
+    S: str
 
-def __generate_pd(activities):
+class ActivityList(TypedDict):
+    L: list[Activity]
+
+class YearActivities(TypedDict):
+    M: dict[str, list[ActivityList]]
+
+def __generate_pd(activities: dict[str, YearActivities]) -> pd.DataFrame:
     data = [[0] * 12 for i in range(1, 32)]
     for activities_date in activities:
         activity_month, activity_day = activities_date.split("-")
@@ -19,7 +28,7 @@ def __generate_pd(activities):
     return pd.DataFrame(data, index=[i for i in range(1, 32)], columns=[calendar.month_name[i][0:3] for i in range(1, 13)])
 
 
-def __retrieve_activities(activities_file_path):
+def __retrieve_activities(activities_file_path: Path) -> dict[str, YearActivities]:
     str_activities = {}
     with open(activities_file_path) as csvfile:
         reader = csv.DictReader(csvfile)
