@@ -15,7 +15,7 @@ def __generate_pd(activities):
             data[int(activity_day) - 1][int(activity_month) - 1] += len(
                 activities_year[activity_year]["L"]
             )
-    return pd.DataFrame(data, index=[i for i in range(1, 32)])
+    return pd.DataFrame(data, index=[i for i in range(1, 32)], columns=['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
 
 
 def __retrieve_activities(activities_file_path):
