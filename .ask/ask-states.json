@@ -1,0 +1,24 @@
+{
+  "askcliStatesVersion": "2020-03-31",
+  "profiles": {
+    "default": {
+      "skillId": "amzn1.ask.skill.96f3bf44-3a7b-448a-ab9b-96085cfa0ca6",
+      "skillMetadata": {
+        "lastDeployHash": ""
+      },
+      "code": {
+        "default": {
+          "lastDeployHash": ""
+        }
+      },
+      "skillInfrastructure": {
+        "userConfig": {
+          "runtime": "python3.11",
+          "handler": "lambda_function.lambda_handler",
+          "awsRegion": "eu-west-1"
+        },
+        "type": "@ask-cli/lambda-deployer"
+      }
+    }
+  }
+}
