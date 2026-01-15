@@ -15,15 +15,6 @@
           "samples": []
         },
         {
-          "slots": [],
-          "name": "GetTimeToHome",
-          "samples": [
-            "quanto manca alla consegna della casa",
-            "quanti giorni mancano alla consegna della casa",
-            "quando sarà pronta la casa"
-          ]
-        },
-        {
           "name": "AMAZON.NavigateHomeIntent",
           "samples": []
         },
