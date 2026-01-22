@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  SKILL_ID: amzn1.ask.skill.96f3bf44-3a7b-448a-ab9b-96085cfa0ca6
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -20,12 +23,12 @@ jobs:
           node-version: '18'
 
       - name: Install ASK CLI
-        run: npm install -g ask-cli
+        run: npm install -g ask-cli@2.30.7 --loglevel=error
 
       - name: Configure ASK CLI
         run: |
           mkdir -p ~/.ask
-          cat > ~/.ask/cli_config << 'EOF'
+          cat > ~/.ask/cli_config << EOF
           {
             "profiles": {
               "default": {
@@ -42,11 +45,44 @@ jobs:
           }
           EOF
 
-      - name: Deploy skill
-        run: ask deploy --ignore-hash
+      - name: Deploy skill metadata
+        run: ask deploy --target skill-metadata --ignore-hash
+        env:
+          ASK_DEFAULT_PROFILE: default
+
+      - name: Get hosted skill git repository
+        id: get-repo
+        run: |
+          REPO_URL=$(ask smapi get-alexa-hosted-skill-metadata --skill-id $SKILL_ID | jq -r '.alexaHosted.repository.url')
+          echo "repo_url=$REPO_URL" >> $GITHUB_OUTPUT
+        env:
+          ASK_DEFAULT_PROFILE: default
+
+      - name: Configure git credentials
+        run: |
+          git config --global credential.helper '!ask util git-credentials-helper'
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Push code to Alexa hosted git
+        run: |
+          # Clone the Alexa hosted repo
+          git clone ${{ steps.get-repo.outputs.repo_url }} alexa-hosted-repo
+
+          # Copy lambda code to the repo
+          rm -rf alexa-hosted-repo/lambda/*
+          cp -r lambda/* alexa-hosted-repo/lambda/
+
+          # Commit and push
+          cd alexa-hosted-repo
+          git add -A
+          git diff --cached --quiet || git commit -m "Deploy from GitHub Actions - $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push origin master
         env:
           ASK_DEFAULT_PROFILE: default
 
       - name: Cleanup
         if: always()
-        run: rm -rf ~/.ask
+        run: |
+          rm -rf ~/.ask
+          rm -rf alexa-hosted-repo
