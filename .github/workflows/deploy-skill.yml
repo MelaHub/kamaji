@@ -9,41 +9,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Lambda dependencies
-        run: |
-          cd lambda
-          pip install -r requirements.txt -t package/
-          cp *.py package/
-          cp language_strings.json package/
-          cd package
-          zip -r ../lambda-deployment.zip .
-          cd ..
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: eu-west-1
-
-      - name: Deploy Lambda function
-        run: |
-          aws lambda update-function-code \
-            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
-            --zip-file fileb://lambda/lambda-deployment.zip \
-            --publish
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -51,17 +20,15 @@ jobs:
           node-version: '18'
 
       - name: Install ASK CLI
-        run: |
-          npm install -g @ask-cli/cli
+        run: npm install -g ask-cli
 
       - name: Configure ASK CLI
         run: |
           mkdir -p ~/.ask
-          cat > ~/.ask/cli_config << EOF
+          cat > ~/.ask/cli_config << 'EOF'
           {
             "profiles": {
               "default": {
-                "aws_profile": "default",
                 "token": {
                   "access_token": "${{ secrets.ASK_ACCESS_TOKEN }}",
                   "refresh_token": "${{ secrets.ASK_REFRESH_TOKEN }}",
@@ -75,15 +42,11 @@ jobs:
           }
           EOF
 
-      - name: Deploy skill manifest and interaction model
-        run: |
-          ask deploy --ignore-hash
+      - name: Deploy skill
+        run: ask deploy --ignore-hash
         env:
           ASK_DEFAULT_PROFILE: default
 
       - name: Cleanup
         if: always()
-        run: |
-          rm -rf lambda/package
-          rm -f lambda/lambda-deployment.zip
-          rm -rf ~/.ask
+        run: rm -rf ~/.ask
