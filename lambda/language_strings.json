@@ -96,24 +96,24 @@
 		"SKILL_NAME": "अंतरिक्ष फ़ैक्ट्स"
 	},
 	"it": {
-		"SKILL_NAME": "Aneddoti dallo spazio",
-		"GET_FACT_MESSAGE": "Ecco il tuo aneddoto: {}",
-		"HELP_MESSAGE": "Puoi chiedermi un aneddoto dallo spazio o puoi chiudermi dicendo 'esci'... Come posso aiutarti?",
+		"SKILL_NAME": "Rigotti Home",
+		"LAUNCH_MESSAGE": "Ciao! Come posso esserti utile?",
+		"ADD_EVENT_PROMPT": "Cosa?",
+		"EVENT_ADDED": "Fatto!",
+		"ADD_ANOTHER_PROMPT": "Vuoi aggiungere un altro evento?",
+		"NO_EVENTS_FOR_DATE": "Mi spiace, non ci sono stati eventi il {date}",
+		"NO_EVENTS_FOUND": "Mi spiace. Non è successo niente il {date}",
+		"EVENT_PROMPT": "Nel {year} {event}; cosa vuoi fare?",
+		"NO_MORE_EVENTS": "Non ho trovato altri eventi!",
+		"HELP_MESSAGE": "Puoi chiedermi di aggiungere, recuperare o modificare eventi. Come posso aiutarti?",
 		"HELP_REPROMPT": "Come posso aiutarti?",
-		"FALLBACK_MESSAGE": "Non posso aiutarti con questo. Posso aiutarti a scoprire fatti e aneddoti sullo spazio, basta che mi chiedi di dirti un aneddoto. Come posso aiutarti?",
+		"FALLBACK_MESSAGE": "Non posso aiutarti con questo. Posso gestire i tuoi eventi familiari. Come posso aiutarti?",
 		"FALLBACK_REPROMPT": "Come posso aiutarti?",
 		"ERROR_MESSAGE": "Spiacenti, si è verificato un errore.",
-		"STOP_MESSAGE": "A presto!",
-		"FACTS": [
-			"Sul pianeta Mercurio, un anno dura solamente 88 giorni.",
-			"Pur essendo più lontana dal Sole, Venere ha temperature più alte di Mercurio.",
-			"Su Marte il sole appare grande la metà che su la terra.",
-			"Tra tutti i pianeti del sistema solare, la giornata più corta è su Giove.",
-			"Il Sole è quasi una sfera perfetta."
-		]
+		"STOP_MESSAGE": "A presto!"
 	},
 	"it-IT": {
-		"SKILL_NAME": "Aneddoti dallo spazio"
+		"SKILL_NAME": "Rigotti Home"
 	},
 	"ja": {
 		"SKILL_NAME": "日本語版豆知識",
