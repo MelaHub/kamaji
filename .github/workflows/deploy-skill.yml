@@ -1,0 +1,52 @@
+name: Deploy Alexa Skill
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install ASK CLI
+        run: npm install -g ask-cli
+
+      - name: Configure ASK CLI
+        run: |
+          mkdir -p ~/.ask
+          cat > ~/.ask/cli_config << 'EOF'
+          {
+            "profiles": {
+              "default": {
+                "token": {
+                  "access_token": "${{ secrets.ASK_ACCESS_TOKEN }}",
+                  "refresh_token": "${{ secrets.ASK_REFRESH_TOKEN }}",
+                  "token_type": "bearer",
+                  "expires_in": 3600,
+                  "expires_at": "2099-12-31T23:59:59.000Z"
+                },
+                "vendor_id": "${{ secrets.ASK_VENDOR_ID }}"
+              }
+            }
+          }
+          EOF
+
+      - name: Deploy skill
+        run: ask deploy --ignore-hash
+        env:
+          ASK_DEFAULT_PROFILE: default
+
+      - name: Cleanup
+        if: always()
+        run: rm -rf ~/.ask

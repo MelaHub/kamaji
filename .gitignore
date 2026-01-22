@@ -135,3 +135,17 @@ dmypy.json
 
 # macOS-specific files
 .DS_Store
+
+# Lambda deployment artifacts
+lambda/package/
+lambda/*.zip
+*.zip
+
+# ASK CLI
+.ask/cli_config
+.ask/.deploy_state
+.ask/tmp/
+
+# AWS and Alexa credentials
+.aws/
+credentials.json

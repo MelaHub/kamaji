@@ -1,0 +1,97 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "slots": [
+            {
+              "name": "date",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "name": "AddEventRequest",
+          "samples": [
+            "aggiungi una ricorrenza per {date}",
+            "aggiungi un evento per {date}",
+            "vorrei aggiungere una ricorrenza per il {date}",
+            "vorrei aggiungere un evento per il {date}",
+            "aggiungi un evento per il {date}",
+            "aggiungi una ricorrenza per il {date}"
+          ]
+        },
+        {
+          "slots": [
+            {
+              "name": "date",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "name": "RetrieveEvents",
+          "samples": [
+            "cos\u0027è successo {date}",
+            "cosa abbiamo fatto {date}"
+          ]
+        },
+        {
+          "slots": [
+            {
+              "name": "event",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "name": "AddEventType",
+          "samples": [
+            "è successo che {event}"
+          ]
+        },
+        {
+          "slots": [
+            {
+              "name": "date",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "name": "ModifyEventsRequest",
+          "samples": [
+            "modificare {date}",
+            "modifica gli eventi {date}",
+            "voglio modificare gli eventi {date}"
+          ]
+        },
+        {
+          "slots": [],
+          "name": "NextEvent",
+          "samples": [
+            "niente",
+            "prossimo"
+          ]
+        },
+        {
+          "slots": [],
+          "name": "DeleteEvent",
+          "samples": [
+            "cancellalo"
+          ]
+        }
+      ],
+      "types": [],
+      "invocationName": "rigotti home"
+    }
+  }
+}
