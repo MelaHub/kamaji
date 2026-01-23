@@ -1,99 +1,91 @@
-name: Deploy Alexa Skill
+name: Alexa-hosted deploy
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
-
-env:
-  SKILL_ID: amzn1.ask.skill.96f3bf44-3a7b-448a-ab9b-96085cfa0ca6
+    branches: ["main"]
+    tags: ["v*"]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Set up Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "20"
 
       - name: Install ASK CLI
-        run: npm install -g ask-cli@2.30.7 --loglevel=error
+        run: npm i -g ask-cli@2
 
-      - name: Configure ASK CLI
+      - name: Configure ASK CLI (non-interactive)
         run: |
           mkdir -p ~/.ask
-          cat > ~/.ask/cli_config << EOF
+          cat > ~/.ask/cli_config <<'JSON'
           {
             "profiles": {
               "default": {
                 "token": {
-                  "access_token": "${{ secrets.ASK_ACCESS_TOKEN }}",
-                  "refresh_token": "${{ secrets.ASK_REFRESH_TOKEN }}",
-                  "token_type": "bearer",
-                  "expires_in": 3600,
-                  "expires_at": "2099-12-31T23:59:59.000Z"
+                  "refresh_token": "${{ secrets.LWA_REFRESH_TOKEN }}"
+                },
+                "oauth": {
+                  "client_id": "${{ secrets.LWA_CLIENT_ID }}",
+                  "client_secret": "${{ secrets.LWA_CLIENT_SECRET }}"
                 },
                 "vendor_id": "${{ secrets.ASK_VENDOR_ID }}"
               }
             }
           }
-          EOF
+          JSON
 
-      - name: Get hosted skill git repository
-        id: get-repo
+      - name: Get Alexa-hosted repo URL
+        id: repo
         run: |
-          echo "Fetching hosted skill metadata..."
-          METADATA=$(ask smapi get-alexa-hosted-skill-metadata --skill-id $SKILL_ID)
-          echo "Metadata response:"
-          echo "$METADATA" | jq .
+          ask smapi get-alexa-hosted-skill-metadata -s ${{ secrets.ALEXA_SKILL_ID }} > meta.json
+          REPO_URL=$(node -p "require('./meta.json').alexaHosted.repository.url")
+          echo "url=$REPO_URL" >> $GITHUB_OUTPUT
 
-          REPO_URL=$(echo "$METADATA" | jq -r '.alexaHosted.repository.url')
+      - name: Generate temporary git credentials
+        id: creds
+        run: |
+          ask smapi generate-credentials-for-alexa-hosted-skill \
+            -s ${{ secrets.ALEXA_SKILL_ID }} \
+            --repository-type GIT > creds.json
 
-          if [ -z "$REPO_URL" ] || [ "$REPO_URL" = "null" ]; then
-            echo "Error: Could not get repository URL"
-            exit 1
+          USER=$(node -p "require('./creds.json').repositoryCredentials.username")
+          PASS=$(node -p "require('./creds.json').repositoryCredentials.password")
+
+          # mask in logs
+          echo "::add-mask::$USER"
+          echo "::add-mask::$PASS"
+
+          echo "user=$USER" >> $GITHUB_OUTPUT
+          echo "pass=$PASS" >> $GITHUB_OUTPUT
+
+      - name: Push to Alexa-hosted branch
+        run: |
+          set -euo pipefail
+          REPO_URL="${{ steps.repo.outputs.url }}"
+          USER="${{ steps.creds.outputs.user }}"
+          PASS="${{ steps.creds.outputs.pass }}"
+
+          # Decide target branch
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            TARGET_BRANCH="prod"
+          else
+            TARGET_BRANCH="master"
           fi
 
-          echo "Repository URL: $REPO_URL"
-          echo "repo_url=$REPO_URL" >> $GITHUB_OUTPUT
-        env:
-          ASK_DEFAULT_PROFILE: default
+          git config user.email "github-actions@users.noreply.github.com"
+          git config user.name "github-actions"
 
-      - name: Configure git credentials
-        run: |
-          git config --global credential.helper '!ask util git-credentials-helper'
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
+          AUTHED_URL="https://${USER}:${PASS}@${REPO_URL#https://}"
+          git remote remove alexa 2>/dev/null || true
+          git remote add alexa "$AUTHED_URL"
 
-      - name: Deploy to Alexa hosted git
-        run: |
-          # Clone the Alexa hosted repo
-          git clone ${{ steps.get-repo.outputs.repo_url }} alexa-hosted-repo
-
-          # Copy skill metadata
-          cp skill.json alexa-hosted-repo/skill-package/skill.json
-          cp -r interactionModels/* alexa-hosted-repo/skill-package/interactionModels/
-
-          # Copy lambda code
-          rm -rf alexa-hosted-repo/lambda/*
-          cp -r lambda/* alexa-hosted-repo/lambda/
-
-          # Commit and push
-          cd alexa-hosted-repo
-          git add -A
-          git diff --cached --quiet || git commit -m "Deploy from GitHub Actions - $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          git push origin master
-        env:
-          ASK_DEFAULT_PROFILE: default
-
-      - name: Cleanup
-        if: always()
-        run: |
-          rm -rf ~/.ask
-          rm -rf alexa-hosted-repo
+          echo "Pushing ${GITHUB_SHA} -> ${TARGET_BRANCH}"
+          git push alexa HEAD:"${TARGET_BRANCH}" --force
