@@ -45,11 +45,6 @@ jobs:
           }
           EOF
 
-      - name: Deploy skill metadata
-        run: ask deploy --target skill-metadata --ignore-hash
-        env:
-          ASK_DEFAULT_PROFILE: default
-
       - name: Get hosted skill git repository
         id: get-repo
         run: |
@@ -64,12 +59,16 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
 
-      - name: Push code to Alexa hosted git
+      - name: Deploy to Alexa hosted git
         run: |
           # Clone the Alexa hosted repo
           git clone ${{ steps.get-repo.outputs.repo_url }} alexa-hosted-repo
 
-          # Copy lambda code to the repo
+          # Copy skill metadata
+          cp skill.json alexa-hosted-repo/skill-package/skill.json
+          cp -r interactionModels/* alexa-hosted-repo/skill-package/interactionModels/
+
+          # Copy lambda code
           rm -rf alexa-hosted-repo/lambda/*
           cp -r lambda/* alexa-hosted-repo/lambda/
 
