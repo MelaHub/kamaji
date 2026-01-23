@@ -100,5 +100,11 @@ jobs:
 
           echo "Deploying to $TARGET_BRANCH"
 
-          # 5) Push
+          # 5) Push to target branch
           git push "$AUTHED_URL" HEAD:"$TARGET_BRANCH" --force
+
+          # 6) Sync dev branch with master (keeps Alexa console editor working)
+          if [[ "$TARGET_BRANCH" == "master" ]]; then
+            echo "Syncing dev branch with master"
+            git push "$AUTHED_URL" HEAD:dev --force
+          fi
