@@ -64,6 +64,17 @@ cd kamaji
 poetry install
 ```
 
+## Environment Variables
+
+The Lambda function requires these environment variables (automatically set by Alexa-hosted infrastructure in production):
+
+| Variable | Description |
+|----------|-------------|
+| `DYNAMODB_PERSISTENCE_TABLE_NAME` | DynamoDB table name (usually the skill ID) |
+| `DYNAMODB_PERSISTENCE_REGION` | AWS region (defaults to `eu-west-1`) |
+
+For local development/testing, set these manually.
+
 ## Running Tests
 
 Tests are written using pytest and located in the `tests/` directory.

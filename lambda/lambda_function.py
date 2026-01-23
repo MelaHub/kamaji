@@ -40,10 +40,7 @@ logger.setLevel(logging.DEBUG)
 
 # DynamoDB configuration
 ddb_region = os.environ.get('DYNAMODB_PERSISTENCE_REGION', 'eu-west-1')
-ddb_table_name = os.environ.get(
-    'DYNAMODB_PERSISTENCE_TABLE_NAME',
-    '96f3bf44-3a7b-448a-ab9b-96085cfa0ca6'
-)
+ddb_table_name = os.environ['DYNAMODB_PERSISTENCE_TABLE_NAME']
 
 ddb_resource = boto3.resource('dynamodb', region_name=ddb_region)
 dynamodb_adapter = DynamoDbAdapter(
