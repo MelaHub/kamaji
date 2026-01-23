@@ -48,6 +48,7 @@ jobs:
           ask smapi get-alexa-hosted-skill-metadata -s ${{ secrets.ALEXA_SKILL_ID }} > meta.json
           REPO_URL=$(node -p "require('./meta.json').alexaHosted.repository.url")
           echo "url=$REPO_URL" >> $GITHUB_OUTPUT
+          
 
       - name: Generate temporary git credentials
         id: creds
@@ -83,10 +84,13 @@ jobs:
 
           git config user.email "github-actions@users.noreply.github.com"
           git config user.name "github-actions"
-
-          AUTHED_URL="https://${USER}:${PASS}@${REPO_URL#https://}"
           git remote remove alexa 2>/dev/null || true
           git remote add alexa "$AUTHED_URL"
 
           echo "Pushing ${GITHUB_SHA} -> ${TARGET_BRANCH}"
           git push alexa HEAD:"${TARGET_BRANCH}" --force
+
+          # Basic auth header (prevents URL parsing problems)
+          AUTH=$(printf '%s:%s' "$USER" "$PASS" | base64 | tr -d '\n')
+          git -c http.extraHeader="Authorization: Basic $AUTH" \
+          push alexa HEAD:"$TARGET_BRANCH" --force
