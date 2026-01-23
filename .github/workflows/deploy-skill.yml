@@ -55,7 +55,7 @@ jobs:
           ask smapi generate-credentials-for-alexa-hosted-skill \
             -s ${{ secrets.ALEXA_SKILL_ID }} \
             --repository-type GIT \
-            --repository-url $REPO_URL > creds.json 
+            --repository-url "${{ steps.repo.outputs.url }}" > creds.json 
 
           USER=$(node -p "require('./creds.json').repositoryCredentials.username")
           PASS=$(node -p "require('./creds.json').repositoryCredentials.password")
