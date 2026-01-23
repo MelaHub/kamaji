@@ -85,7 +85,7 @@ jobs:
           git config user.email "github-actions@users.noreply.github.com"
           git config user.name "github-actions"
           git remote remove alexa 2>/dev/null || true
-          git remote add alexa "$AUTHED_URL"
+          git remote add alexa "$REPO_URL"
 
           echo "Pushing ${GITHUB_SHA} -> ${TARGET_BRANCH}"
           git push alexa HEAD:"${TARGET_BRANCH}" --force
