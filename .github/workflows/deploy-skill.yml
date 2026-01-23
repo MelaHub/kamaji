@@ -79,9 +79,9 @@ jobs:
       - name: Push to Alexa-hosted branch
         run: |
           set -euo pipefail
-          REPO_URL="${{ steps.repo.outputs.url }}"
-          GIT_USERNAME="${{ steps.creds.outputs.user }}"
-          GIT_PASSWORD="${{ steps.creds.outputs.pass }}"
+          export REPO_URL="${{ steps.repo.outputs.url }}"
+          export GIT_USERNAME="${{ steps.creds.outputs.user }}"
+          export GIT_PASSWORD="${{ steps.creds.outputs.pass }}"
 
           # 3) URL-encode user/pass and build authed url
           AUTHED_URL="$(python3 - <<'PY'
