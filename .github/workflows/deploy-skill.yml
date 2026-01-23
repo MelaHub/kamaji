@@ -108,6 +108,8 @@ jobs:
           EOF
           chmod +x /tmp/git-askpass.sh
 
+          cat /tmp/git-askpass.sh
+
           export GIT_ASKPASS=/tmp/git-askpass.sh
           export GIT_TERMINAL_PROMPT=0
 
