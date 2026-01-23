@@ -46,11 +46,12 @@ jobs:
         id: repo
         run: |
           ask smapi get-alexa-hosted-skill-metadata -s ${{ secrets.ALEXA_SKILL_ID }} > meta.json
-          REPO_URL=$(node -p "require('./meta.json').alexaHosted.repository.url")
+          REPO_URL=$(jq -r '.alexaHosted.repository.url' meta.json)
 
           echo "Repo URL (no creds): $REPO_URL"
           echo "url=$REPO_URL" >> $GITHUB_OUTPUT
-          
+
+          set -euo pipefail
 
       - name: Generate temporary git credentials
         id: creds
@@ -60,8 +61,8 @@ jobs:
             --repository-type GIT \
             --repository-url "${{ steps.repo.outputs.url }}" > creds.json 
 
-          USER=$(node -p "require('./creds.json').repositoryCredentials.username")
-          PASS=$(node -p "require('./creds.json').repositoryCredentials.password")
+          USER=$(jq -r '.repositoryCredentials.username' creds.json)
+          PASS=$(jq -r '.repositoryCredentials.password' creds.json)
 
           test -n "$USER"
           test -n "$PASS"
@@ -73,6 +74,8 @@ jobs:
           echo "user=$USER" >> $GITHUB_OUTPUT
           echo "pass=$PASS" >> $GITHUB_OUTPUT
 
+
+
       - name: Push to Alexa-hosted branch
         run: |
           set -euo pipefail
@@ -80,45 +83,24 @@ jobs:
           GIT_USERNAME="${{ steps.creds.outputs.user }}"
           GIT_PASSWORD="${{ steps.creds.outputs.pass }}"
 
-          test -n "${REPO_URL}"
-          test -n "${GIT_USERNAME}"
-          test -n "${GIT_PASSWORD}"
+          # 3) URL-encode user/pass and build authed url
+          AUTHED_URL="$(python3 - <<'PY'
+          import os, urllib.parse
+          repo = os.environ["REPO_URL"]
+          u = urllib.parse.quote(os.environ["GIT_USERNAME"], safe="")
+          p = urllib.parse.quote(os.environ["GIT_PASSWORD"], safe="")
+          print(repo.replace("https://", f"https://{u}:{p}@", 1))
+          PY
+          )"
+          # Optional: safe print (masked)
+          echo "$AUTHED_URL" | sed 's#https://.*@#https://***:***@#'
 
-          echo "Repo URL (with creds): https://${GIT_USERNAME}:***@${REPO_URL}"
-
-          # Decide target branch
+          # 4) Decide target branch
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             TARGET_BRANCH="prod"
           else
             TARGET_BRANCH="master"
           fi
 
-          git config user.email "github-actions@users.noreply.github.com"
-          git config user.name "github-actions"
-          git remote remove alexa 2>/dev/null || true
-          git remote add alexa "$REPO_URL"
-
-          echo "Pushing ${GITHUB_SHA} -> ${TARGET_BRANCH}"
-          # Provide credentials non-interactively
-          cat > /tmp/git-askpass.sh <<'EOF'
-          #!/usr/bin/env bash
-          case "$1" in
-            *Username*) echo "${GIT_USERNAME}" ;;
-            *Password*) echo "${GIT_PASSWORD}" ;;
-            *) echo "" ;;
-          esac
-          EOF
-          chmod +x /tmp/git-askpass.sh
-
-          cat /tmp/git-askpass.sh
-
-          export GIT_ASKPASS=/tmp/git-askpass.sh
-          export GIT_TERMINAL_PROMPT=0
-
-          echo "Sanity check: can we read remote heads?"
-          git ls-remote --heads "$REPO_URL"
-
-          echo "Pushing ${GITHUB_SHA} -> ${TARGET_BRANCH}"
-
-          # Push
-          git push alexa HEAD:"${TARGET_BRANCH}" --force
+          # 5) Push
+          git push "$AUTHED_URL" HEAD:"$TARGET_BRANCH" --force
