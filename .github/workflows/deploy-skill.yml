@@ -84,6 +84,8 @@ jobs:
           test -n "${GIT_USERNAME}"
           test -n "${GIT_PASSWORD}"
 
+          echo "Repo URL (with creds): https://${GIT_USERNAME}:***@${REPO_URL}"
+
           # Decide target branch
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             TARGET_BRANCH="prod"
