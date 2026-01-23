@@ -74,8 +74,6 @@ jobs:
           echo "user=$USER" >> $GITHUB_OUTPUT
           echo "pass=$PASS" >> $GITHUB_OUTPUT
 
-
-
       - name: Push to Alexa-hosted branch
         run: |
           set -euo pipefail
@@ -92,8 +90,6 @@ jobs:
           print(repo.replace("https://", f"https://{u}:{p}@", 1))
           PY
           )"
-          # Optional: safe print (masked)
-          echo "$AUTHED_URL" | sed 's#https://.*@#https://***:***@#'
 
           # 4) Decide target branch
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
@@ -101,6 +97,8 @@ jobs:
           else
             TARGET_BRANCH="master"
           fi
+
+          echo "Deploying to $TARGET_BRANCH"
 
           # 5) Push
           git push "$AUTHED_URL" HEAD:"$TARGET_BRANCH" --force
