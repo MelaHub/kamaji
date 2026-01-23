@@ -48,7 +48,19 @@ jobs:
       - name: Get hosted skill git repository
         id: get-repo
         run: |
-          REPO_URL=$(ask smapi get-alexa-hosted-skill-metadata --skill-id $SKILL_ID | jq -r '.alexaHosted.repository.url')
+          echo "Fetching hosted skill metadata..."
+          METADATA=$(ask smapi get-alexa-hosted-skill-metadata --skill-id $SKILL_ID)
+          echo "Metadata response:"
+          echo "$METADATA" | jq .
+
+          REPO_URL=$(echo "$METADATA" | jq -r '.alexaHosted.repository.url')
+
+          if [ -z "$REPO_URL" ] || [ "$REPO_URL" = "null" ]; then
+            echo "Error: Could not get repository URL"
+            exit 1
+          fi
+
+          echo "Repository URL: $REPO_URL"
           echo "repo_url=$REPO_URL" >> $GITHUB_OUTPUT
         env:
           ASK_DEFAULT_PROFILE: default
