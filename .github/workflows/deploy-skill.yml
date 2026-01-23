@@ -75,6 +75,10 @@ jobs:
           USER="${{ steps.creds.outputs.user }}"
           PASS="${{ steps.creds.outputs.pass }}"
 
+          test -n "${REPO_URL}"
+          test -n "${GIT_USERNAME}"
+          test -n "${GIT_PASSWORD}"
+
           # Decide target branch
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             TARGET_BRANCH="prod"
@@ -88,9 +92,19 @@ jobs:
           git remote add alexa "$REPO_URL"
 
           echo "Pushing ${GITHUB_SHA} -> ${TARGET_BRANCH}"
-          git push alexa HEAD:"${TARGET_BRANCH}" --force
+          # Provide credentials non-interactively
+          cat > /tmp/git-askpass.sh <<'EOF'
+          #!/usr/bin/env bash
+          case "$1" in
+            *Username*) echo "${GIT_USERNAME}" ;;
+            *Password*) echo "${GIT_PASSWORD}" ;;
+            *) echo "" ;;
+          esac
+          EOF
+          chmod +x /tmp/git-askpass.sh
 
-          # Basic auth header (prevents URL parsing problems)
-          AUTH=$(printf '%s:%s' "$USER" "$PASS" | base64 | tr -d '\n')
-          git -c http.extraHeader="Authorization: Basic $AUTH" \
-          push alexa HEAD:"$TARGET_BRANCH" --force
+          export GIT_ASKPASS=/tmp/git-askpass.sh
+          export GIT_TERMINAL_PROMPT=0
+
+          # Push
+          git push alexa HEAD:"${TARGET_BRANCH}" --force
