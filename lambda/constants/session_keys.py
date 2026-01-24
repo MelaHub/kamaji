@@ -10,3 +10,6 @@ CURR_EVENT_IDX: Final[str] = "curr_event_idx"
 
 # Delete confirmation
 PENDING_DELETE: Final[str] = "pending_delete"
+
+# Edit mode
+PENDING_EDIT: Final[str] = "pending_edit"

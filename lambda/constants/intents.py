@@ -11,6 +11,8 @@ MODIFY_EVENTS_REQUEST: Final[str] = "ModifyEventsRequest"
 NEXT_EVENT: Final[str] = "NextEvent"
 PREVIOUS_EVENT: Final[str] = "PreviousEvent"
 DELETE_EVENT: Final[str] = "DeleteEvent"
+EDIT_EVENT: Final[str] = "EditEvent"
+EDIT_EVENT_DESCRIPTION: Final[str] = "EditEventDescription"
 
 # Amazon built-in intents
 AMAZON_HELP: Final[str] = "AMAZON.HelpIntent"

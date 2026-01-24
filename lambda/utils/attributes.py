@@ -129,3 +129,42 @@ def delete_event_from_persistence(
     logger.info(f"Deleted event at index {event_idx} from {event_day}/{event_year}")
 
     return remaining_events
+
+
+def update_event_in_persistence(
+    handler_input: HandlerInput,
+    event_day: str,
+    event_year: str,
+    event_idx: int,
+    new_event: str
+) -> bool:
+    """
+    Update an event in persistent storage.
+
+    Args:
+        handler_input: Alexa handler input
+        event_day: Day key in "M-D" format
+        event_year: Year as string
+        event_idx: Index of event to update
+        new_event: New event description
+
+    Returns:
+        True if updated successfully, False otherwise
+    """
+    persistence_attr = handler_input.attributes_manager.persistent_attributes
+    events = persistence_attr.get(event_day, {})
+
+    if event_year not in events:
+        logger.warning(f"Year {event_year} not found for day {event_day}")
+        return False
+
+    year_events = events[event_year]
+    if event_idx >= len(year_events):
+        logger.warning(f"Event index {event_idx} out of range for {event_day}/{event_year}")
+        return False
+
+    persistence_attr[event_day][event_year][event_idx] = new_event
+    handler_input.attributes_manager.save_persistent_attributes()
+    logger.info(f"Updated event at index {event_idx} in {event_day}/{event_year}: {new_event}")
+
+    return True

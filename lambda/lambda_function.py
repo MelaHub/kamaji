@@ -26,6 +26,8 @@ from handlers import (
     DeleteEventHandler,
     ConfirmDeleteHandler,
     CancelDeleteHandler,
+    EditEventHandler,
+    EditEventDescriptionHandler,
     HelpIntentHandler,
     CancelOrStopIntentHandler,
     FallbackIntentHandler,
@@ -68,6 +70,8 @@ sb.add_request_handler(PreviousEventHandler())
 sb.add_request_handler(DeleteEventHandler())
 sb.add_request_handler(ConfirmDeleteHandler())
 sb.add_request_handler(CancelDeleteHandler())
+sb.add_request_handler(EditEventHandler())
+sb.add_request_handler(EditEventDescriptionHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(FallbackIntentHandler())

@@ -12,6 +12,8 @@ from .events import (
     DeleteEventHandler,
     ConfirmDeleteHandler,
     CancelDeleteHandler,
+    EditEventHandler,
+    EditEventDescriptionHandler,
 )
 from .amazon_intents import (
     HelpIntentHandler,

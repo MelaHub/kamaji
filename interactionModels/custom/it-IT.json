@@ -172,6 +172,37 @@
             "toglilo",
             "cancella questo evento"
           ]
+        },
+        {
+          "slots": [],
+          "name": "EditEvent",
+          "samples": [
+            "modificalo",
+            "cambialo",
+            "correggilo",
+            "modifica",
+            "cambia",
+            "correggi",
+            "voglio modificarlo",
+            "voglio cambiarlo"
+          ]
+        },
+        {
+          "slots": [
+            {
+              "name": "event",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "name": "EditEventDescription",
+          "samples": [
+            "cambialo in {event}",
+            "modificalo in {event}",
+            "diventa {event}",
+            "correggi in {event}",
+            "il nuovo testo è {event}",
+            "{event}"
+          ]
         }
       ],
       "types": [],

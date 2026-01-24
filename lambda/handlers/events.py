@@ -17,6 +17,7 @@ from utils import (
     get_events_for_day,
     add_event_to_persistence,
     delete_event_from_persistence,
+    update_event_in_persistence,
 )
 import prompts
 
@@ -453,3 +454,69 @@ class CancelDeleteHandler(BaseHandler):
 
         speech = self.get_string(handler_input, prompts.DELETE_CANCELLED)
         return self.build_response(handler_input, speech, reprompt=speech)
+
+
+class EditEventHandler(BaseHandler):
+    """Handler for initiating edit flow."""
+
+    def can_handle(self, handler_input: HandlerInput) -> bool:
+        return is_intent_name(intents.EDIT_EVENT)(handler_input)
+
+    def handle(self, handler_input: HandlerInput) -> Response:
+        self.log_handler_entry(handler_input)
+
+        context = _get_event_navigation_context(handler_input)
+        if context is None:
+            speech = self.get_string(handler_input, prompts.ERROR_MESSAGE)
+            return self.build_response(handler_input, speech)
+
+        # Set pending edit flag
+        self.set_session_attr(handler_input, session_keys.PENDING_EDIT, True)
+
+        speech = self.get_string(handler_input, prompts.EDIT_EVENT_PROMPT)
+        return self.build_response(handler_input, speech, reprompt=speech)
+
+
+class EditEventDescriptionHandler(BaseHandler):
+    """Handler for receiving new event description during edit."""
+
+    def can_handle(self, handler_input: HandlerInput) -> bool:
+        pending = self.get_session_attr(handler_input, session_keys.PENDING_EDIT)
+        return is_intent_name(intents.EDIT_EVENT_DESCRIPTION)(handler_input) and pending
+
+    def handle(self, handler_input: HandlerInput) -> Response:
+        self.log_handler_entry(handler_input)
+
+        # Clear pending edit flag
+        self.set_session_attr(handler_input, session_keys.PENDING_EDIT, False)
+
+        new_event = get_slot_value(handler_input=handler_input, slot_name=slots.EVENT)
+        if new_event is None:
+            speech = self.get_string(handler_input, prompts.ERROR_MESSAGE)
+            return self.build_response(handler_input, speech)
+
+        context = _get_event_navigation_context(handler_input)
+        if context is None:
+            speech = self.get_string(handler_input, prompts.ERROR_MESSAGE)
+            return self.build_response(handler_input, speech)
+
+        event_day, events, years, year_idx, event_idx = context
+        curr_year = years[year_idx]
+
+        # Update the event
+        success = update_event_in_persistence(
+            handler_input, event_day, curr_year, event_idx, new_event
+        )
+
+        if not success:
+            speech = self.get_string(handler_input, prompts.ERROR_MESSAGE)
+            return self.build_response(handler_input, speech)
+
+        edited_speech = self.get_string(handler_input, prompts.EVENT_EDITED)
+        next_event_speech = self.get_string(
+            handler_input, prompts.EVENT_PROMPT,
+            year=curr_year, event=new_event
+        )
+        speech = f"{edited_speech} {next_event_speech}"
+
+        return self.build_response(handler_input, speech, reprompt=next_event_speech)
