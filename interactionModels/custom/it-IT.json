@@ -125,6 +125,19 @@
         },
         {
           "slots": [],
+          "name": "PreviousEvent",
+          "samples": [
+            "precedente",
+            "torna indietro",
+            "quello prima",
+            "indietro",
+            "vai indietro",
+            "evento precedente",
+            "fammi vedere il precedente"
+          ]
+        },
+        {
+          "slots": [],
           "name": "DeleteEvent",
           "samples": [
             "cancellalo",

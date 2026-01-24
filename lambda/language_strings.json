@@ -113,7 +113,8 @@
 		"STOP_MESSAGE": "A presto!",
 		"DELETE_CONFIRM_PROMPT": "Sei sicuro di voler cancellare '{event}'? Dì sì o no.",
 		"EVENT_DELETED": "Evento cancellato.",
-		"DELETE_CANCELLED": "Ok, non cancello niente. Vuoi vedere il prossimo evento o hai finito?"
+		"DELETE_CANCELLED": "Ok, non cancello niente. Vuoi vedere il prossimo evento o hai finito?",
+		"NO_PREVIOUS_EVENTS": "Questo è il primo evento. Non ce ne sono di precedenti."
 	},
 	"it-IT": {
 		"SKILL_NAME": "Rigotti Home"

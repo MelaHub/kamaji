@@ -7,6 +7,7 @@ from .events import (
     RetrieveEventHandler,
     ModifyEventsRequestHandler,
     NextEventHandler,
+    PreviousEventHandler,
     DeleteEventHandler,
     ConfirmDeleteHandler,
     CancelDeleteHandler,

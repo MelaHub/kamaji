@@ -246,6 +246,60 @@ class NextEventHandler(BaseHandler):
         return self.build_response(handler_input, speech)
 
 
+class PreviousEventHandler(BaseHandler):
+    """Handler for navigating to previous event."""
+
+    def can_handle(self, handler_input: HandlerInput) -> bool:
+        return is_intent_name(intents.PREVIOUS_EVENT)(handler_input)
+
+    def handle(self, handler_input: HandlerInput) -> Response:
+        self.log_handler_entry(handler_input)
+
+        context = _get_event_navigation_context(handler_input)
+        if context is None:
+            speech = self.get_string(handler_input, prompts.ERROR_MESSAGE)
+            return self.build_response(handler_input, speech)
+
+        event_day, events, years, year_idx, event_idx = context
+        curr_year = years[year_idx]
+
+        # Try to move to previous event in current year
+        if event_idx > 0:
+            new_event_idx = event_idx - 1
+            self.set_session_attr(
+                handler_input, session_keys.CURR_EVENT_IDX, new_event_idx
+            )
+            speech = self.get_string(
+                handler_input, prompts.EVENT_PROMPT,
+                year=curr_year, event=events[curr_year][new_event_idx]
+            )
+            return self.build_response(handler_input, speech, reprompt=speech)
+
+        # Try to move to previous year
+        if year_idx > 0:
+            new_year_idx = year_idx - 1
+            new_year = years[new_year_idx]
+            new_events = events[new_year]
+            new_event_idx = len(new_events) - 1  # Last event of previous year
+
+            self.set_session_attr(
+                handler_input, session_keys.CURR_YEAR_IDX, new_year_idx
+            )
+            self.set_session_attr(
+                handler_input, session_keys.CURR_EVENT_IDX, new_event_idx
+            )
+
+            speech = self.get_string(
+                handler_input, prompts.EVENT_PROMPT,
+                year=new_year, event=new_events[new_event_idx]
+            )
+            return self.build_response(handler_input, speech, reprompt=speech)
+
+        # No previous events
+        speech = self.get_string(handler_input, prompts.NO_PREVIOUS_EVENTS)
+        return self.build_response(handler_input, speech)
+
+
 class DeleteEventHandler(BaseHandler):
     """Handler for initiating delete with confirmation."""
 

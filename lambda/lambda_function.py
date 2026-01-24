@@ -21,6 +21,7 @@ from handlers import (
     RetrieveEventHandler,
     ModifyEventsRequestHandler,
     NextEventHandler,
+    PreviousEventHandler,
     DeleteEventHandler,
     ConfirmDeleteHandler,
     CancelDeleteHandler,
@@ -61,6 +62,7 @@ sb.add_request_handler(AddEventTypeHandler())
 sb.add_request_handler(RetrieveEventHandler())
 sb.add_request_handler(ModifyEventsRequestHandler())
 sb.add_request_handler(NextEventHandler())
+sb.add_request_handler(PreviousEventHandler())
 sb.add_request_handler(DeleteEventHandler())
 sb.add_request_handler(ConfirmDeleteHandler())
 sb.add_request_handler(CancelDeleteHandler())

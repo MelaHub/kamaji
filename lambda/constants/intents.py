@@ -8,6 +8,7 @@ ADD_EVENT_TYPE: Final[str] = "AddEventType"
 RETRIEVE_EVENTS: Final[str] = "RetrieveEvents"
 MODIFY_EVENTS_REQUEST: Final[str] = "ModifyEventsRequest"
 NEXT_EVENT: Final[str] = "NextEvent"
+PREVIOUS_EVENT: Final[str] = "PreviousEvent"
 DELETE_EVENT: Final[str] = "DeleteEvent"
 
 # Amazon built-in intents
