@@ -247,7 +247,7 @@ class NextEventHandler(BaseHandler):
 
 
 class DeleteEventHandler(BaseHandler):
-    """Handler for deleting current event."""
+    """Handler for initiating delete with confirmation."""
 
     def can_handle(self, handler_input: HandlerInput) -> bool:
         return is_intent_name(intents.DELETE_EVENT)(handler_input)
@@ -262,28 +262,63 @@ class DeleteEventHandler(BaseHandler):
 
         event_day, events, years, year_idx, event_idx = context
         curr_year = years[year_idx]
+        curr_event = events[curr_year][event_idx]
+
+        # Set pending delete flag and ask for confirmation
+        self.set_session_attr(handler_input, session_keys.PENDING_DELETE, True)
+
+        speech = self.get_string(
+            handler_input, prompts.DELETE_CONFIRM_PROMPT, event=curr_event
+        )
+        return self.build_response(handler_input, speech, reprompt=speech)
+
+
+class ConfirmDeleteHandler(BaseHandler):
+    """Handler for confirming delete (AMAZON.YesIntent)."""
+
+    def can_handle(self, handler_input: HandlerInput) -> bool:
+        pending = self.get_session_attr(handler_input, session_keys.PENDING_DELETE)
+        return is_intent_name(intents.AMAZON_YES)(handler_input) and pending
+
+    def handle(self, handler_input: HandlerInput) -> Response:
+        self.log_handler_entry(handler_input)
+
+        # Clear pending delete flag
+        self.set_session_attr(handler_input, session_keys.PENDING_DELETE, False)
+
+        context = _get_event_navigation_context(handler_input)
+        if context is None:
+            speech = self.get_string(handler_input, prompts.ERROR_MESSAGE)
+            return self.build_response(handler_input, speech)
+
+        event_day, events, years, year_idx, event_idx = context
+        curr_year = years[year_idx]
 
         # Delete the event
         remaining_events = delete_event_from_persistence(
             handler_input, event_day, curr_year, event_idx
         )
 
+        deleted_speech = self.get_string(handler_input, prompts.EVENT_DELETED)
+
         # Try to show next event in same year
         if remaining_events and len(remaining_events) > event_idx:
-            speech = self.get_string(
+            next_event_speech = self.get_string(
                 handler_input, prompts.EVENT_PROMPT,
                 year=curr_year, event=remaining_events[event_idx]
             )
-            return self.build_response(handler_input, speech, reprompt=speech)
+            speech = f"{deleted_speech} {next_event_speech}"
+            return self.build_response(handler_input, speech, reprompt=next_event_speech)
 
         # Try to show first event in same year (if we deleted the last one)
         if remaining_events:
             self.set_session_attr(handler_input, session_keys.CURR_EVENT_IDX, 0)
-            speech = self.get_string(
+            next_event_speech = self.get_string(
                 handler_input, prompts.EVENT_PROMPT,
                 year=curr_year, event=remaining_events[0]
             )
-            return self.build_response(handler_input, speech, reprompt=speech)
+            speech = f"{deleted_speech} {next_event_speech}"
+            return self.build_response(handler_input, speech, reprompt=next_event_speech)
 
         # Try to move to next year
         if len(years) > year_idx + 1:
@@ -301,12 +336,31 @@ class DeleteEventHandler(BaseHandler):
                 )
                 self.set_session_attr(handler_input, session_keys.CURR_EVENT_IDX, 0)
 
-                speech = self.get_string(
+                next_event_speech = self.get_string(
                     handler_input, prompts.EVENT_PROMPT,
                     year=new_year, event=new_events[0]
                 )
-                return self.build_response(handler_input, speech, reprompt=speech)
+                speech = f"{deleted_speech} {next_event_speech}"
+                return self.build_response(handler_input, speech, reprompt=next_event_speech)
 
         # No more events
-        speech = self.get_string(handler_input, prompts.NO_MORE_EVENTS)
+        no_more_speech = self.get_string(handler_input, prompts.NO_MORE_EVENTS)
+        speech = f"{deleted_speech} {no_more_speech}"
         return self.build_response(handler_input, speech)
+
+
+class CancelDeleteHandler(BaseHandler):
+    """Handler for cancelling delete (AMAZON.NoIntent)."""
+
+    def can_handle(self, handler_input: HandlerInput) -> bool:
+        pending = self.get_session_attr(handler_input, session_keys.PENDING_DELETE)
+        return is_intent_name(intents.AMAZON_NO)(handler_input) and pending
+
+    def handle(self, handler_input: HandlerInput) -> Response:
+        self.log_handler_entry(handler_input)
+
+        # Clear pending delete flag
+        self.set_session_attr(handler_input, session_keys.PENDING_DELETE, False)
+
+        speech = self.get_string(handler_input, prompts.DELETE_CANCELLED)
+        return self.build_response(handler_input, speech, reprompt=speech)

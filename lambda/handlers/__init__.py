@@ -8,6 +8,8 @@ from .events import (
     ModifyEventsRequestHandler,
     NextEventHandler,
     DeleteEventHandler,
+    ConfirmDeleteHandler,
+    CancelDeleteHandler,
 )
 from .amazon_intents import (
     HelpIntentHandler,
