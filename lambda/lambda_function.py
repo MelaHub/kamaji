@@ -18,6 +18,7 @@ from handlers import (
     LaunchRequestHandler,
     AddEventRequestHandler,
     AddEventTypeHandler,
+    AddEventCompleteHandler,
     RetrieveEventHandler,
     ModifyEventsRequestHandler,
     NextEventHandler,
@@ -59,6 +60,7 @@ sb = CustomSkillBuilder(persistence_adapter=dynamodb_adapter)
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(AddEventRequestHandler())
 sb.add_request_handler(AddEventTypeHandler())
+sb.add_request_handler(AddEventCompleteHandler())
 sb.add_request_handler(RetrieveEventHandler())
 sb.add_request_handler(ModifyEventsRequestHandler())
 sb.add_request_handler(NextEventHandler())

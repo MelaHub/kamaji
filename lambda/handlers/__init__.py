@@ -4,6 +4,7 @@ from .launch import LaunchRequestHandler
 from .events import (
     AddEventRequestHandler,
     AddEventTypeHandler,
+    AddEventCompleteHandler,
     RetrieveEventHandler,
     ModifyEventsRequestHandler,
     NextEventHandler,

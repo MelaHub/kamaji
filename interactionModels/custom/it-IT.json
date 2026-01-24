@@ -95,6 +95,29 @@
             {
               "name": "date",
               "type": "AMAZON.DATE"
+            },
+            {
+              "name": "event",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "name": "AddEventComplete",
+          "samples": [
+            "il {date} {event}",
+            "aggiungi che il {date} {event}",
+            "{date} abbiamo {event}",
+            "{date} siamo andati a {event}",
+            "{date} c'è stato {event}",
+            "salva per il {date} che {event}",
+            "ricorda che il {date} {event}",
+            "memorizza per {date} {event}"
+          ]
+        },
+        {
+          "slots": [
+            {
+              "name": "date",
+              "type": "AMAZON.DATE"
             }
           ],
           "name": "ModifyEventsRequest",

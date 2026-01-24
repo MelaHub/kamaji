@@ -5,6 +5,7 @@ from typing import Final
 # Custom intents
 ADD_EVENT_REQUEST: Final[str] = "AddEventRequest"
 ADD_EVENT_TYPE: Final[str] = "AddEventType"
+ADD_EVENT_COMPLETE: Final[str] = "AddEventComplete"
 RETRIEVE_EVENTS: Final[str] = "RetrieveEvents"
 MODIFY_EVENTS_REQUEST: Final[str] = "ModifyEventsRequest"
 NEXT_EVENT: Final[str] = "NextEvent"

@@ -80,6 +80,41 @@ class AddEventTypeHandler(BaseHandler):
         return self.build_response(handler_input, speech, reprompt=reprompt)
 
 
+class AddEventCompleteHandler(BaseHandler):
+    """Handler for adding event with date and description in one utterance."""
+
+    def can_handle(self, handler_input: HandlerInput) -> bool:
+        return is_intent_name(intents.ADD_EVENT_COMPLETE)(handler_input)
+
+    def handle(self, handler_input: HandlerInput) -> Response:
+        self.log_handler_entry(handler_input)
+
+        date_str = get_slot_value(handler_input=handler_input, slot_name=slots.DATE)
+        event = get_slot_value(handler_input=handler_input, slot_name=slots.EVENT)
+
+        if date_str is None or event is None:
+            logger.warning("Missing date or event slot in AddEventComplete")
+            speech = self.get_string(handler_input, prompts.ERROR_MESSAGE)
+            return self.build_response(handler_input, speech)
+
+        try:
+            event_date = parse_date_slot(date_str)
+        except DateParseError as e:
+            logger.warning(f"Invalid date in AddEventComplete: {e}")
+            speech = self.get_string(handler_input, prompts.ERROR_MESSAGE)
+            return self.build_response(handler_input, speech)
+
+        event_day = format_event_day(event_date)
+        event_year = format_event_year(event_date)
+
+        add_event_to_persistence(handler_input, event_day, event_year, event)
+
+        speech = self.get_string(handler_input, prompts.EVENT_ADDED)
+        reprompt = self.get_string(handler_input, prompts.ADD_ANOTHER_PROMPT)
+
+        return self.build_response(handler_input, speech, reprompt=reprompt)
+
+
 class RetrieveEventHandler(BaseHandler):
     """Handler for querying events by date."""
 
