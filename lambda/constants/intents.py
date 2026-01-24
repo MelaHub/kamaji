@@ -5,13 +5,19 @@ from typing import Final
 # Custom intents
 ADD_EVENT_REQUEST: Final[str] = "AddEventRequest"
 ADD_EVENT_TYPE: Final[str] = "AddEventType"
+ADD_EVENT_COMPLETE: Final[str] = "AddEventComplete"
 RETRIEVE_EVENTS: Final[str] = "RetrieveEvents"
 MODIFY_EVENTS_REQUEST: Final[str] = "ModifyEventsRequest"
 NEXT_EVENT: Final[str] = "NextEvent"
+PREVIOUS_EVENT: Final[str] = "PreviousEvent"
 DELETE_EVENT: Final[str] = "DeleteEvent"
+EDIT_EVENT: Final[str] = "EditEvent"
+EDIT_EVENT_DESCRIPTION: Final[str] = "EditEventDescription"
 
 # Amazon built-in intents
 AMAZON_HELP: Final[str] = "AMAZON.HelpIntent"
 AMAZON_CANCEL: Final[str] = "AMAZON.CancelIntent"
 AMAZON_STOP: Final[str] = "AMAZON.StopIntent"
 AMAZON_FALLBACK: Final[str] = "AMAZON.FallbackIntent"
+AMAZON_YES: Final[str] = "AMAZON.YesIntent"
+AMAZON_NO: Final[str] = "AMAZON.NoIntent"

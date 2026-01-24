@@ -7,4 +7,5 @@ from .attributes import (
     get_events_for_day,
     add_event_to_persistence,
     delete_event_from_persistence,
+    update_event_in_persistence,
 )

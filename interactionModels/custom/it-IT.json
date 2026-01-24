@@ -19,6 +19,14 @@
           "samples": []
         },
         {
+          "name": "AMAZON.YesIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NoIntent",
+          "samples": []
+        },
+        {
           "slots": [
             {
               "name": "date",
@@ -32,7 +40,11 @@
             "vorrei aggiungere una ricorrenza per il {date}",
             "vorrei aggiungere un evento per il {date}",
             "aggiungi un evento per il {date}",
-            "aggiungi una ricorrenza per il {date}"
+            "aggiungi una ricorrenza per il {date}",
+            "nuovo evento per il {date}",
+            "salva un evento per {date}",
+            "registra qualcosa per il {date}",
+            "memorizza un evento per {date}"
           ]
         },
         {
@@ -44,8 +56,17 @@
           ],
           "name": "RetrieveEvents",
           "samples": [
-            "cos\u0027è successo {date}",
-            "cosa abbiamo fatto {date}"
+            "cos'è successo {date}",
+            "cosa abbiamo fatto {date}",
+            "cosa è successo il {date}",
+            "eventi del {date}",
+            "ricordami {date}",
+            "che giorno era {date}",
+            "cosa c'era {date}",
+            "dimmi gli eventi del {date}",
+            "quali eventi ci sono per {date}",
+            "cosa è accaduto {date}",
+            "racconta {date}"
           ]
         },
         {
@@ -57,7 +78,39 @@
           ],
           "name": "AddEventType",
           "samples": [
-            "è successo che {event}"
+            "è successo che {event}",
+            "{event}",
+            "abbiamo {event}",
+            "siamo andati a {event}",
+            "c'è stato {event}",
+            "era {event}",
+            "abbiamo fatto {event}",
+            "è stato {event}",
+            "siamo stati a {event}",
+            "ho fatto {event}"
+          ]
+        },
+        {
+          "slots": [
+            {
+              "name": "date",
+              "type": "AMAZON.DATE"
+            },
+            {
+              "name": "event",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "name": "AddEventComplete",
+          "samples": [
+            "il {date} {event}",
+            "aggiungi che il {date} {event}",
+            "{date} abbiamo {event}",
+            "{date} siamo andati a {event}",
+            "{date} c'è stato {event}",
+            "salva per il {date} che {event}",
+            "ricorda che il {date} {event}",
+            "memorizza per {date} {event}"
           ]
         },
         {
@@ -71,7 +124,12 @@
           "samples": [
             "modificare {date}",
             "modifica gli eventi {date}",
-            "voglio modificare gli eventi {date}"
+            "voglio modificare gli eventi {date}",
+            "gestisci eventi del {date}",
+            "cambia eventi {date}",
+            "modifica {date}",
+            "voglio vedere gli eventi del {date}",
+            "fammi vedere {date}"
           ]
         },
         {
@@ -79,14 +137,71 @@
           "name": "NextEvent",
           "samples": [
             "niente",
-            "prossimo"
+            "prossimo",
+            "avanti",
+            "vai avanti",
+            "prossimo evento",
+            "continua",
+            "altro",
+            "fammi vedere il prossimo"
+          ]
+        },
+        {
+          "slots": [],
+          "name": "PreviousEvent",
+          "samples": [
+            "precedente",
+            "torna indietro",
+            "quello prima",
+            "indietro",
+            "vai indietro",
+            "evento precedente",
+            "fammi vedere il precedente"
           ]
         },
         {
           "slots": [],
           "name": "DeleteEvent",
           "samples": [
-            "cancellalo"
+            "cancellalo",
+            "elimina",
+            "eliminalo",
+            "cancella",
+            "rimuovi",
+            "rimuovilo",
+            "toglilo",
+            "cancella questo evento"
+          ]
+        },
+        {
+          "slots": [],
+          "name": "EditEvent",
+          "samples": [
+            "modificalo",
+            "cambialo",
+            "correggilo",
+            "modifica",
+            "cambia",
+            "correggi",
+            "voglio modificarlo",
+            "voglio cambiarlo"
+          ]
+        },
+        {
+          "slots": [
+            {
+              "name": "event",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "name": "EditEventDescription",
+          "samples": [
+            "cambialo in {event}",
+            "modificalo in {event}",
+            "diventa {event}",
+            "correggi in {event}",
+            "il nuovo testo è {event}",
+            "{event}"
           ]
         }
       ],
