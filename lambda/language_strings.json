@@ -116,7 +116,8 @@
 		"DELETE_CANCELLED": "Ok, non cancello niente. Vuoi vedere il prossimo evento o hai finito?",
 		"NO_PREVIOUS_EVENTS": "Questo è il primo evento. Non ce ne sono di precedenti.",
 		"EDIT_EVENT_PROMPT": "Come vuoi modificare questo evento? Dimmi il nuovo testo.",
-		"EVENT_EDITED": "Evento modificato."
+		"EVENT_EDITED": "Evento modificato.",
+		"ANYTHING_ELSE": "Cos'altro posso fare?"
 	},
 	"it-IT": {
 		"SKILL_NAME": "Rigotti Home"
