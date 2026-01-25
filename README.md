@@ -14,14 +14,22 @@ The skill is primarily in Italian and uses DynamoDB for persistent storage.
 
 ```mermaid
 sequenceDiagram
-    User->>Echo: Alexa, aggiungi un evento per il 20 agosto 2022
-    Echo-->>User: Certo! Cosa è successo?
-    User->>Echo: Abbiamo visitato il Taj Mahal
-    Echo->>Lambda: AddEventType intent with event data
+    User->>Echo: Alexa, apri Rigotti Home
+    Echo-->>User: Ciao! Cosa vuoi fare?
+    User->>Echo: Aggiungi un evento per il 20 agosto
+    Echo-->>User: Perfetto! Cosa è successo?
+    User->>Echo: Siamo andati al mare
+    Echo->>Lambda: AddEventType intent
     Lambda->>DynamoDB: Store event at key "8-20"
     DynamoDB-->>Lambda: Success
-    Lambda-->>Echo: Evento aggiunto!
-    Echo-->>User: Fatto!
+    Echo-->>User: Ho aggiunto l'evento. Vuoi aggiungerne un altro?
+    User->>Echo: Cosa è successo il 15 marzo?
+    Echo->>Lambda: RetrieveEvents intent
+    Lambda->>DynamoDB: Get events for "3-15"
+    DynamoDB-->>Lambda: Events data
+    Echo-->>User: Nel 2022: compleanno di Luca. Cos'altro posso fare?
+    User->>Echo: Esci
+    Echo-->>User: A presto!
 ```
 
 ## Project Structure
@@ -185,15 +193,115 @@ ask configure
 git push <alexa-hosted-remote> HEAD:master
 ```
 
-## Voice Commands (Italian)
+## Utilizzo della Skill
 
-| Action | Example Phrase |
-|--------|----------------|
-| Add event | "Alexa, aggiungi un evento per il 20 agosto" |
-| Retrieve events | "Alexa, cosa abbiamo fatto il 20 agosto?" |
-| Modify events | "Alexa, modifica gli eventi del 20 agosto" |
-| Navigate events | "prossimo" |
-| Delete event | "cancellalo" |
+### Aprire la Skill
+
+```
+"Alexa, apri Rigotti Home"
+```
+
+La skill risponde con un messaggio di benvenuto e rimane in ascolto. Puoi fare più richieste di seguito senza dover riaprire la skill.
+
+### Aggiungere Eventi
+
+**Metodo 1: In due passaggi**
+```
+Tu:    "Aggiungi un evento per il 20 agosto"
+Alexa: "Perfetto! Cosa è successo?"
+Tu:    "Siamo andati al mare"
+Alexa: "Ho aggiunto l'evento. Vuoi aggiungerne un altro?"
+```
+
+**Metodo 2: In una sola frase**
+```
+Tu:    "Il 20 agosto siamo andati al mare"
+Alexa: "Ho aggiunto l'evento. Vuoi aggiungerne un altro?"
+```
+
+**Varianti supportate:**
+- "Aggiungi un evento per il {data}"
+- "Nuovo evento per il {data}"
+- "Salva un evento per {data}"
+- "Ricorda che il {data} {evento}"
+- "{data} abbiamo {evento}"
+
+### Recuperare Eventi
+
+```
+Tu:    "Cosa è successo il 20 agosto?"
+Alexa: "Nel 2022: siamo andati al mare. Nel 2023: compleanno di Marco. Cos'altro posso fare?"
+```
+
+**Varianti supportate:**
+- "Cos'è successo {data}"
+- "Cosa abbiamo fatto {data}"
+- "Eventi del {data}"
+- "Ricordami {data}"
+- "Dimmi gli eventi del {data}"
+
+### Modificare Eventi
+
+Per modificare o cancellare eventi, entra in modalità modifica:
+
+```
+Tu:    "Modifica gli eventi del 20 agosto"
+Alexa: "Nel 2022: siamo andati al mare. Vuoi cancellarlo, andare al prossimo, o hai finito?"
+```
+
+#### Navigazione tra Eventi
+
+| Azione | Frasi |
+|--------|-------|
+| Prossimo evento | "prossimo", "avanti", "continua", "altro" |
+| Evento precedente | "precedente", "indietro", "torna indietro" |
+
+#### Cancellare un Evento
+
+La cancellazione richiede conferma:
+```
+Tu:    "Cancellalo"
+Alexa: "Sei sicuro di voler cancellare 'siamo andati al mare'? Dì sì o no."
+Tu:    "Sì"
+Alexa: "Evento cancellato. Nel 2023: compleanno di Marco. Vuoi cancellarlo, andare al prossimo, o hai finito?"
+```
+
+**Varianti supportate:**
+- "cancellalo", "elimina", "rimuovi", "toglilo"
+
+#### Modificare un Evento
+
+```
+Tu:    "Modificalo"
+Alexa: "Come vuoi modificare questo evento? Dimmi il nuovo testo."
+Tu:    "Siamo andati al mare con i nonni"
+Alexa: "Evento modificato. Nel 2022: siamo andati al mare con i nonni."
+```
+
+**Varianti supportate:**
+- "modificalo", "cambialo", "correggilo"
+
+### Uscire dalla Skill
+
+```
+"Stop" / "Esci" / "Basta"
+```
+
+### Riepilogo Comandi
+
+| Azione | Esempi |
+|--------|--------|
+| Aprire | "Alexa, apri Rigotti Home" |
+| Aggiungere (2 passi) | "Aggiungi un evento per il 15 marzo" |
+| Aggiungere (1 passo) | "Il 15 marzo è nato il bambino" |
+| Recuperare | "Cosa è successo il 15 marzo?" |
+| Modificare | "Modifica gli eventi del 15 marzo" |
+| Navigare avanti | "prossimo", "avanti" |
+| Navigare indietro | "precedente", "indietro" |
+| Cancellare | "cancellalo" → "sì" per confermare |
+| Modificare testo | "modificalo" → nuovo testo |
+| Aiuto | "aiuto" |
+| Uscire | "esci", "stop" |
 
 ## Development
 
