@@ -137,12 +137,14 @@ class RetrieveEventHandler(BaseHandler):
         event_day = format_event_day(event_date)
         events = get_events_for_day(handler_input, event_day)
 
+        reprompt = self.get_string(handler_input, prompts.ANYTHING_ELSE)
+
         if not events:
             formatted_date = event_date.strftime('%d %B')
             speech = self.get_string(
                 handler_input, prompts.NO_EVENTS_FOUND, date=formatted_date
             )
-            return self.build_response(handler_input, speech)
+            return self.build_response(handler_input, speech, reprompt=reprompt)
 
         # Build speech listing all events by year
         parts = []
@@ -151,7 +153,7 @@ class RetrieveEventHandler(BaseHandler):
             parts.append(f"Nel {year} {year_events}.")
         speech = " ".join(parts)
 
-        return self.build_response(handler_input, speech)
+        return self.build_response(handler_input, speech, reprompt=reprompt)
 
 
 class ModifyEventsRequestHandler(BaseHandler):
@@ -192,7 +194,8 @@ class ModifyEventsRequestHandler(BaseHandler):
 
         if not curr_events:
             speech = self.get_string(handler_input, prompts.NO_MORE_EVENTS)
-            return self.build_response(handler_input, speech)
+            reprompt = self.get_string(handler_input, prompts.ANYTHING_ELSE)
+            return self.build_response(handler_input, speech, reprompt=reprompt)
 
         speech = self.get_string(
             handler_input, prompts.EVENT_PROMPT,
@@ -279,7 +282,8 @@ class NextEventHandler(BaseHandler):
 
         # No more events
         speech = self.get_string(handler_input, prompts.NO_MORE_EVENTS)
-        return self.build_response(handler_input, speech)
+        reprompt = self.get_string(handler_input, prompts.ANYTHING_ELSE)
+        return self.build_response(handler_input, speech, reprompt=reprompt)
 
 
 class PreviousEventHandler(BaseHandler):
@@ -333,7 +337,8 @@ class PreviousEventHandler(BaseHandler):
 
         # No previous events
         speech = self.get_string(handler_input, prompts.NO_PREVIOUS_EVENTS)
-        return self.build_response(handler_input, speech)
+        reprompt = self.get_string(handler_input, prompts.ANYTHING_ELSE)
+        return self.build_response(handler_input, speech, reprompt=reprompt)
 
 
 class DeleteEventHandler(BaseHandler):
@@ -436,7 +441,8 @@ class ConfirmDeleteHandler(BaseHandler):
         # No more events
         no_more_speech = self.get_string(handler_input, prompts.NO_MORE_EVENTS)
         speech = f"{deleted_speech} {no_more_speech}"
-        return self.build_response(handler_input, speech)
+        reprompt = self.get_string(handler_input, prompts.ANYTHING_ELSE)
+        return self.build_response(handler_input, speech, reprompt=reprompt)
 
 
 class CancelDeleteHandler(BaseHandler):
